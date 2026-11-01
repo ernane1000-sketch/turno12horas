@@ -1,1 +1,911 @@
 
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="screen-orientation" content="portrait">
+  <meta name="x5-orientation" content="portrait">
+  <title>Turno Rotativo</title>
+  <link rel="manifest" href="manifest.json">
+  <meta name="theme-color" content="#0f172a">
+  <script src="https://cdn.tailwindcss.com"></script>
+
+  <style>
+    body {
+      background-color: #0f172a;
+      color: #f8fafc;
+      font-family: sans-serif;
+    }
+
+    .glass {
+      background: rgba(30, 41, 59, 0.7);
+      backdrop-filter: blur(10px);
+      border: 1px solid rgba(255, 255, 255, 0.1);
+    }
+  </style>
+</head>
+
+<body class="min-h-screen p-4 max-w-md mx-auto pb-10">
+
+  <!-- ===================================== -->
+  <!-- TELA 1: CALENDÁRIO PRINCIPAL          -->
+  <!-- ===================================== -->
+  <div id="telaPrincipal">
+
+    <!-- CABEÇALHO -->
+    <header class="text-center my-4">
+      <h1 class="text-2xl font-bold text-blue-400">
+        Escala Turno Rotativo
+      </h1>
+      <p id="subtituloMes"
+         class="text-xs text-slate-400 font-semibold mt-1">
+         CARREGANDO...
+      </p>
+    </header>
+
+    <!-- SELEÇÃO DE ESCALA -->
+    <div class="glass p-3 rounded-xl mb-3 text-center">
+      <label class="block text-xs text-slate-400 mb-2 font-bold">
+        SELECIONE O TIPO DE ESCALA:
+      </label>
+
+      <div class="grid grid-cols-3 gap-2">
+        <button onclick="mudarOpcaoEscala(1)"
+          id="btnEscala1"
+          class="py-1.5 rounded font-bold text-xs text-slate-900 bg-emerald-400">
+          2x2
+        </button>
+
+        <button onclick="mudarOpcaoEscala(2)"
+          id="btnEscala2"
+          class="py-1.5 rounded font-bold text-xs text-slate-900 bg-slate-300">
+          3x3
+        </button>
+
+        <button onclick="mudarOpcaoEscala(3)"
+          id="btnEscala3"
+          class="py-1.5 rounded font-bold text-xs text-slate-900 bg-slate-300">
+          4x4
+        </button>
+      </div>
+    </div>
+
+    <!-- SELEÇÃO DE EQUIPE -->
+    <div class="glass p-3 rounded-xl mb-4 text-center">
+      <label class="block text-xs text-slate-400 mb-2 font-bold">
+        SELECIONE A EQUIPE:
+      </label>
+
+      <div class="grid grid-cols-4 gap-2">
+        <button onclick="selecionarEquipe('A')" id="btnEquipeA"
+          class="py-2 rounded font-bold text-slate-900 bg-emerald-400">A</button>
+
+        <button onclick="selecionarEquipe('B')" id="btnEquipeB"
+          class="py-2 rounded font-bold text-slate-900 bg-slate-300">B</button>
+
+        <button onclick="selecionarEquipe('C')" id="btnEquipeC"
+          class="py-2 rounded font-bold text-slate-900 bg-slate-300">C</button>
+
+        <button onclick="selecionarEquipe('D')" id="btnEquipeD"
+          class="py-2 rounded font-bold text-slate-900 bg-slate-300">D</button>
+      </div>
+    </div>
+
+    <!-- NAVEGAÇÃO DE MÊS -->
+    <div class="flex justify-between items-center mb-3 px-1">
+      <button onclick="mudarMes(-1)" id="btnMesAnt"
+        class="text-xs bg-slate-800 px-3 py-2 rounded text-slate-300 font-bold border border-slate-700">
+        &lt; ANT
+      </button>
+
+      <span id="labelMesAno"
+        class="font-bold text-sm text-slate-200">
+        DEZEMBRO / 2026
+      </span>
+
+      <button onclick="mudarMes(1)" id="btnMesProx"
+        class="text-xs bg-slate-800 px-3 py-2 rounded text-slate-300 font-bold border border-slate-700">
+        PROX &gt;
+      </button>
+    </div>
+
+    <!-- CALENDÁRIO -->
+    <div class="glass p-3 rounded-xl mb-4">
+      <div class="grid grid-cols-7 gap-1 text-center font-bold text-xs text-slate-400 mb-2 border-b border-slate-700 pb-2">
+        <div>DOM</div>
+        <div>SEG</div>
+        <div>TER</div>
+        <div>QUA</div>
+        <div>QUI</div>
+        <div>SEX</div>
+        <div>SÁB</div>
+      </div>
+
+      <div id="gridCalendario"
+        class="grid grid-cols-7 gap-1 text-center">
+      </div>
+    </div>
+
+    <!-- DETALHES -->
+    <div class="glass p-4 rounded-xl border-l-4 border-blue-500 mb-4"
+         id="painelDetalhes">
+
+      <div id="textoDiaEscala"
+        class="text-xs text-slate-400 font-semibold">
+        Detalhes do turno
+      </div>
+
+      <div id="textoTurno"
+        class="text-lg font-bold text-white mt-1">
+        Selecione um dia na tabela para ver o horário.
+      </div>
+    </div>
+
+    <!-- LEGENDA -->
+    <div class="glass p-3 rounded-xl text-xs space-y-2 mb-4">
+      <div class="font-bold text-slate-400 text-center mb-1">
+        LEGENDA DE HORÁRIOS
+      </div>
+
+      <div class="grid grid-cols-2 gap-2">
+
+        <div class="flex items-center space-x-2">
+          <div class="w-4 h-4 rounded"
+            style="background-color: rgb(150, 200, 255);"></div>
+          <span class="text-slate-300">07:00 às 19:00h (1º)</span>
+        </div>
+
+        <div class="flex items-center space-x-2">
+          <div class="w-4 h-4 rounded"
+            style="background-color: rgb(255, 230, 80);"></div>
+          <span class="text-slate-300">19:00 às 07:00h (2º)</span>
+        </div>
+
+        <div class="flex items-center space-x-2 col-span-2">
+          <div class="w-4 h-4 rounded"
+            style="background-color: rgb(120, 230, 120);"></div>
+          <span class="text-slate-300">Folga</span>
+        </div>
+
+      </div>
+    </div>
+
+    <!-- BOTÃO PARA ABRIR A TELA DE PDF NO FINAL DA PRIMEIRA TELA -->
+    <button onclick="abrirTelaPDF()"
+      class="w-full py-3.5 rounded-xl bg-blue-600 hover:bg-blue-500 text-white font-bold text-sm transition shadow-lg flex items-center justify-center space-x-2 border border-blue-400/30">
+      <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+      </svg>
+      <span>IMPRIMIR PDF</span>
+    </button>
+
+  </div>
+
+  <!-- ===================================== -->
+  <!-- TELA 2: GERADOR DE PDF ANUAL          -->
+  <!-- ===================================== -->
+  <div id="telaPDF" class="hidden">
+
+    <div class="flex items-center justify-between my-4">
+      <button onclick="fecharTelaPDF()" class="text-xs bg-slate-800 text-slate-300 font-bold px-3 py-2 rounded-lg border border-slate-700">
+        ← VOLTAR
+      </button>
+      <h2 class="text-lg font-bold text-blue-400">
+        Gerar Calendário PDF
+      </h2>
+      <div class="w-12"></div>
+    </div>
+
+    <div class="glass p-4 rounded-xl mt-2">
+
+      <label class="block text-xs text-slate-400 font-bold mb-1">
+        ANO DO CALENDÁRIO:
+      </label>
+
+      <input type="number" id="anoPDF"
+        value="2027" min="2026" max="2100"
+        class="w-full p-2.5 rounded bg-slate-800 text-white border border-slate-600 mb-4 focus:outline-none focus:border-blue-500">
+
+      <label class="block text-xs text-slate-400 font-bold mb-1">
+        ESCOLHA A ESCALA:
+      </label>
+
+      <select id="escalaPDF"
+        class="w-full p-2.5 rounded bg-slate-800 text-white border border-slate-600 mb-4 focus:outline-none focus:border-blue-500">
+        <option value="1">Escala 2x2</option>
+        <option value="2">Escala 3x3</option>
+        <option value="3">Escala 4x4</option>
+      </select>
+
+      <label class="block text-xs text-slate-400 font-bold mb-1">
+        O QUE DESEJA IMPRIMIR?
+      </label>
+
+      <select id="tipoPDF" onchange="atualizarSelecaoPDF()"
+        class="w-full p-2.5 rounded bg-slate-800 text-white border border-slate-600 mb-4 focus:outline-none focus:border-blue-500">
+        <option value="todas">Todas as equipes (A, B, C e D)</option>
+        <option value="uma">Somente uma equipe</option>
+      </select>
+
+      <div id="campoEquipePDF" class="hidden mb-4">
+        <label class="block text-xs text-slate-400 font-bold mb-1">
+          SELECIONE A EQUIPE:
+        </label>
+
+        <select id="equipePDF"
+          class="w-full p-2.5 rounded bg-slate-800 text-white border border-slate-600 focus:outline-none focus:border-blue-500">
+          <option value="A">Equipe A</option>
+          <option value="B">Equipe B</option>
+          <option value="C">Equipe C</option>
+          <option value="D">Equipe D</option>
+        </select>
+      </div>
+
+      <button onclick="gerarPDF()"
+        class="w-full py-3.5 rounded-lg bg-blue-500 hover:bg-blue-600 text-white font-bold text-sm transition shadow-lg mt-2 flex items-center justify-center space-x-2">
+        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+        </svg>
+        <span>GERAR PDF PARA IMPRESSÃO</span>
+      </button>
+
+      <p class="text-center text-xs text-slate-400 mt-3">
+        A4 horizontal — 12 meses em uma única folha monocromática.
+      </p>
+
+    </div>
+
+  </div>
+
+  <script>
+
+    // =====================================
+    // CONTROLE DAS TELAS
+    // =====================================
+
+    function abrirTelaPDF() {
+      document.getElementById("telaPrincipal").classList.add("hidden");
+      document.getElementById("telaPDF").classList.remove("hidden");
+    }
+
+    function fecharTelaPDF() {
+      document.getElementById("telaPDF").classList.add("hidden");
+      document.getElementById("telaPrincipal").classList.remove("hidden");
+    }
+
+    // =====================================
+    // ORIENTAÇÃO DO APLICATIVO
+    // =====================================
+
+    if (window.screen && window.screen.orientation &&
+        window.screen.orientation.lock) {
+      window.screen.orientation.lock("portrait").catch(() => {});
+    }
+
+    // =====================================
+    // ESCALA 2x2 - CICLO DE 8 DIAS
+    // =====================================
+
+    const ciclo1 = [
+      ["07:00 às 19:00", "Folga", "19:00 às 07:00", "Folga"],
+      ["07:00 às 19:00", "Folga", "19:00 às 07:00", "Folga"],
+      ["Folga", "07:00 às 19:00", "Folga", "19:00 às 07:00"],
+      ["Folga", "07:00 às 19:00", "Folga", "19:00 às 07:00"],
+      ["19:00 às 07:00", "Folga", "07:00 às 19:00", "Folga"],
+      ["19:00 às 07:00", "Folga", "07:00 às 19:00", "Folga"],
+      ["Folga", "19:00 às 07:00", "Folga", "07:00 às 19:00"],
+      ["Folga", "19:00 às 07:00", "Folga", "07:00 às 19:00"]
+    ];
+
+    // =====================================
+    // ESCALA 3x3 - CICLO DE 12 DIAS
+    // =====================================
+
+    const ciclo2 = [
+      ["07:00 às 19:00", "19:00 às 07:00", "Folga", "Folga"],
+      ["07:00 às 19:00", "19:00 às 07:00", "Folga", "Folga"],
+      ["07:00 às 19:00", "19:00 às 07:00", "Folga", "Folga"],
+
+      ["Folga", "Folga", "07:00 às 19:00", "19:00 às 07:00"],
+      ["Folga", "Folga", "07:00 às 19:00", "19:00 às 07:00"],
+      ["Folga", "Folga", "07:00 às 19:00", "19:00 às 07:00"],
+
+      ["19:00 às 07:00", "07:00 às 19:00", "Folga", "Folga"],
+      ["19:00 às 07:00", "07:00 às 19:00", "Folga", "Folga"],
+      ["19:00 às 07:00", "07:00 às 19:00", "Folga", "Folga"],
+
+      ["Folga", "Folga", "19:00 às 07:00", "07:00 às 19:00"],
+      ["Folga", "Folga", "19:00 às 07:00", "07:00 às 19:00"],
+      ["Folga", "Folga", "19:00 às 07:00", "07:00 às 19:00"]
+    ];
+
+    // =====================================
+    // ESCALA 4x4 - CICLO DE 8 DIAS
+    // =====================================
+
+    const ciclo3 = [
+      ["07:00 às 19:00", "19:00 às 07:00", "Folga", "Folga"],
+      ["07:00 às 19:00", "19:00 às 07:00", "Folga", "Folga"],
+      ["19:00 às 07:00", "Folga", "07:00 às 19:00", "Folga"],
+      ["19:00 às 07:00", "Folga", "07:00 às 19:00", "Folga"],
+      ["Folga", "Folga", "19:00 às 07:00", "07:00 às 19:00"],
+      ["Folga", "Folga", "19:00 às 07:00", "07:00 às 19:00"],
+      ["07:00 às 19:00", "Folga", "Folga", "19:00 às 07:00"],
+      ["07:00 às 19:00", "Folga", "Folga", "19:00 às 07:00"]
+    ];
+
+    // =====================================
+    // CONFIGURAÇÕES
+    // =====================================
+
+    const nomesMeses = [
+      "JANEIRO", "FEVEREIRO", "MARÇO", "ABRIL",
+      "MAIO", "JUNHO", "JULHO", "AGOSTO",
+      "SETEMBRO", "OUTUBRO", "NOVEMBRO", "DEZEMBRO"
+    ];
+
+    const diasSemana = [
+      "DOM", "SEG", "TER", "QUA", "QUI", "SEX", "SÁB"
+    ];
+
+    let opcaoEscalaSelecionada = 1;
+    let equipeSelecionada = "A";
+    let dataAtual = new Date(2026, 11, 1);
+
+    // =====================================
+    // OBTER CICLO
+    // =====================================
+
+    function obterCiclo(opcao) {
+
+      if (opcao === 2) return ciclo2;
+      if (opcao === 3) return ciclo3;
+
+      return ciclo1;
+    }
+
+    // =====================================
+    // MUDAR ESCALA
+    // =====================================
+
+    function mudarOpcaoEscala(opcao) {
+
+      opcaoEscalaSelecionada = opcao;
+
+      [1, 2, 3].forEach(op => {
+
+        const btn = document.getElementById("btnEscala" + op);
+
+        btn.className = op === opcao
+          ? "py-1.5 rounded font-bold text-xs text-slate-900 bg-emerald-400 transition"
+          : "py-1.5 rounded font-bold text-xs text-slate-900 bg-slate-300 transition";
+
+      });
+
+      renderizarCalendario();
+    }
+
+    // =====================================
+    // CALCULAR TURNO
+    // =====================================
+
+    function obterDadosDia(ano, mes, dia, equipe, opcao) {
+
+      const data = Date.UTC(ano, mes, dia);
+      const base = Date.UTC(2026, 11, 16);
+
+      const diferenca = data - base;
+
+      const dias = Math.floor(
+        diferenca / (24 * 60 * 60 * 1000)
+      );
+
+      const cicloSelecionado = obterCiclo(
+        opcao || opcaoEscalaSelecionada
+      );
+
+      let indice = dias % cicloSelecionado.length;
+
+      if (indice < 0) {
+        indice += cicloSelecionado.length;
+      }
+
+      const coluna = ["A", "B", "C", "D"].indexOf(equipe);
+
+      return cicloSelecionado[indice][coluna];
+    }
+
+    // =====================================
+    // SELECIONAR EQUIPE
+    // =====================================
+
+    function selecionarEquipe(equipe) {
+
+      equipeSelecionada = equipe;
+
+      ["A", "B", "C", "D"].forEach(e => {
+
+        const btn = document.getElementById("btnEquipe" + e);
+
+        btn.className = e === equipe
+          ? "py-2 rounded font-bold text-slate-900 bg-emerald-400 transition"
+          : "py-2 rounded font-bold text-slate-900 bg-slate-300 transition";
+
+      });
+
+      renderizarCalendario();
+    }
+
+    // =====================================
+    // MUDAR MÊS
+    // =====================================
+
+    function mudarMes(delta) {
+
+      dataAtual.setMonth(dataAtual.getMonth() + delta);
+
+      renderizarCalendario();
+    }
+
+    // =====================================
+    // SELECIONAR DIA
+    // =====================================
+
+    function selecionarDia(dia) {
+
+      const ano = dataAtual.getFullYear();
+      const mes = dataAtual.getMonth();
+
+      const horario = obterDadosDia(
+        ano, mes, dia, equipeSelecionada
+      );
+
+      const nomeEscala =
+        opcaoEscalaSelecionada === 1 ? "2x2" :
+        opcaoEscalaSelecionada === 2 ? "3x3" : "4x4";
+
+      document.getElementById("textoDiaEscala").innerText =
+        `Escala ${nomeEscala} — Equipe ${equipeSelecionada} — Dia ${dia}/${mes + 1}/${ano}`;
+
+      document.getElementById("textoTurno").innerText = horario;
+    }
+
+    // =====================================
+    // DESENHAR CALENDÁRIO
+    // =====================================
+
+    function renderizarCalendario() {
+
+      const ano = dataAtual.getFullYear();
+      const mes = dataAtual.getMonth();
+
+      const nomeEscala =
+        opcaoEscalaSelecionada === 1 ? "2x2" :
+        opcaoEscalaSelecionada === 2 ? "3x3" : "4x4";
+
+      document.getElementById("subtituloMes").innerText =
+        `${nomesMeses[mes]} / ${ano} — ESCALA ${nomeEscala} (EQ. ${equipeSelecionada})`;
+
+      document.getElementById("labelMesAno").innerText =
+        `${nomesMeses[mes]} / ${ano}`;
+
+      const mesAntIdx = mes === 0 ? 11 : mes - 1;
+      const mesProxIdx = mes === 11 ? 0 : mes + 1;
+
+      document.getElementById("btnMesAnt").innerText =
+        `< ${nomesMeses[mesAntIdx].slice(0,3)}`;
+
+      document.getElementById("btnMesProx").innerText =
+        `${nomesMeses[mesProxIdx].slice(0,3)} >`;
+
+      const grid = document.getElementById("gridCalendario");
+
+      grid.innerHTML = "";
+
+      const primeiroDiaSemana =
+        new Date(ano, mes, 1).getDay();
+
+      const totalDias =
+        new Date(ano, mes + 1, 0).getDate();
+
+      for (let i = 0; i < primeiroDiaSemana; i++) {
+        grid.appendChild(document.createElement("div"));
+      }
+
+      for (let dia = 1; dia <= totalDias; dia++) {
+
+        const horario = obterDadosDia(
+          ano, mes, dia, equipeSelecionada
+        );
+
+        const celula = document.createElement("button");
+
+        celula.innerText = dia;
+
+        celula.className =
+          "py-2 font-bold text-xs rounded border border-white/20 transition text-slate-900";
+
+        if (horario === "Folga") {
+          celula.style.backgroundColor = "rgb(120, 230, 120)";
+        } else if (horario.startsWith("07:00")) {
+          celula.style.backgroundColor = "rgb(150, 200, 255)";
+        } else if (horario.startsWith("19:00")) {
+          celula.style.backgroundColor = "rgb(255, 230, 80)";
+        }
+
+        celula.onclick = () => selecionarDia(dia);
+
+        grid.appendChild(celula);
+      }
+
+      document.getElementById("textoDiaEscala").innerText =
+        "Detalhes do turno";
+
+      document.getElementById("textoTurno").innerText =
+        "Selecione um dia na tabela para ver o horário.";
+    }
+
+    // =====================================
+    // CONFIGURAR OPÇÕES DO PDF
+    // =====================================
+
+    function atualizarSelecaoPDF() {
+
+      const tipo = document.getElementById("tipoPDF").value;
+
+      document.getElementById("campoEquipePDF").classList.toggle(
+        "hidden", tipo !== "uma"
+      );
+
+    }
+
+    // =====================================
+    // CÓDIGO RESUMIDO DO TURNO
+    // =====================================
+
+    function codigoTurno(horario) {
+
+      if (horario === "Folga") return "Folga";
+      if (horario.startsWith("07:00")) return "Dia";
+      if (horario.startsWith("19:00")) return "Noite";
+
+      return "";
+    }
+
+    // =====================================
+    // MONTAR MÊS PARA O PDF
+    // =====================================
+
+    function montarMesPDF(ano, mes, opcao, tipo, equipe) {
+
+      const primeiroDia = new Date(ano, mes, 1).getDay();
+      const totalDias = new Date(ano, mes + 1, 0).getDate();
+
+      let html = `
+        <div class="mes">
+          <div class="titulo-mes">${nomesMeses[mes]}</div>
+          <table>
+            <thead>
+              <tr>
+                ${diasSemana.map(d => `<th>${d}</th>`).join("")}
+              </tr>
+            </thead>
+            <tbody>
+      `;
+
+      let dia = 1;
+
+      for (let semana = 0; semana < 6; semana++) {
+
+        html += "<tr>";
+
+        for (let coluna = 0; coluna < 7; coluna++) {
+
+          if ((semana === 0 && coluna < primeiroDia) ||
+              dia > totalDias) {
+
+            html += "<td></td>";
+
+          } else {
+
+            if (tipo === "uma") {
+
+              const horario = obterDadosDia(
+                ano, mes, dia, equipe, opcao
+              );
+
+              const codigo = (horario === "Folga") ? "Folga" : (horario.startsWith("07:00") ? "Dia" : "Noite");
+
+              html += `
+                <td>
+                  <div class="numero">${dia}</div>
+                  <div class="turno">${codigo}</div>
+                </td>
+              `;
+
+            } else {
+
+              let turnos = "";
+
+              ["A", "B", "C", "D"].forEach(letra => {
+
+                const horario = obterDadosDia(
+                  ano, mes, dia, letra, opcao
+                );
+
+                const codigo = codigoTurno(horario);
+
+                if (codigo !== "Folga") {
+                  turnos += `
+                    <div class="mini">
+                      ${letra} (${codigo})
+                    </div>
+                  `;
+                }
+
+              });
+
+              html += `
+                <td>
+                  <div class="numero">${dia}</div>
+                  <div class="todos">${turnos}</div>
+                </td>
+              `;
+
+            }
+
+            dia++;
+          }
+        }
+
+        html += "</tr>";
+      }
+
+      html += `
+            </tbody>
+          </table>
+        </div>
+      `;
+
+      return html;
+    }
+
+    // =====================================
+    // GERAR PDF / IMPRESSÃO A4 (PRETO E BRANCO)
+    // =====================================
+
+    function gerarPDF() {
+
+      const ano = Number(
+        document.getElementById("anoPDF").value
+      );
+
+      const opcao = Number(
+        document.getElementById("escalaPDF").value
+      );
+
+      const tipo = document.getElementById("tipoPDF").value;
+
+      const equipe = document.getElementById("equipePDF").value;
+
+      if (!Number.isInteger(ano) || ano < 2026 || ano > 2100) {
+        alert("Informe um ano entre 2026 e 2100.");
+        return;
+      }
+
+      const nomeEscala =
+        opcao === 1 ? "2x2" :
+        opcao === 2 ? "3x3" : "4x4";
+
+      const descricao = tipo === "todas"
+        ? "EQUIPES EM SERVIÇO (A, B, C, D)"
+        : "EQUIPE " + equipe;
+
+      const janela = window.open("", "_blank");
+
+      if (!janela) {
+        alert("O navegador bloqueou a abertura do PDF. Permita pop-ups e tente novamente.");
+        return;
+      }
+
+      let mesesHTML = "";
+
+      for (let mes = 0; mes < 12; mes++) {
+        mesesHTML += montarMesPDF(
+          ano, mes, opcao, tipo, equipe
+        );
+      }
+
+      const conteudo = `
+        <!DOCTYPE html>
+        <html lang="pt-BR">
+        <head>
+          <meta charset="UTF-8">
+
+          <title>Calendário ${ano} - Turno Rotativo</title>
+
+          <style>
+
+            @page {
+              size: A4 landscape;
+              margin: 3mm;
+            }
+
+            * {
+              box-sizing: border-box;
+            }
+
+            html, body {
+              margin: 0;
+              padding: 0;
+              width: 100%;
+              font-family: Arial, sans-serif;
+              color: #000;
+              background: #fff;
+            }
+
+            .pagina {
+              width: 291mm;
+              height: 204mm;
+              display: flex;
+              flex-direction: column;
+              justify-content: space-between;
+              padding: 1mm 0;
+            }
+
+            .cabecalho {
+              text-align: center;
+              flex-shrink: 0;
+            }
+
+            h1 {
+              font-size: 12pt;
+              margin: 0 0 0.5mm;
+            }
+
+            .subtitulo {
+              font-size: 7pt;
+              font-weight: bold;
+            }
+
+            .calendarios {
+              display: grid;
+              grid-template-columns: repeat(4, minmax(0, 1fr));
+              grid-template-rows: repeat(3, minmax(0, 1fr));
+              gap: 2mm;
+              width: 100%;
+              flex-grow: 1;
+            }
+
+            .mes {
+              border: 0.5px solid #000;
+              padding: 1mm;
+              display: flex;
+              flex-direction: column;
+              background: #fff;
+            }
+
+            .titulo-mes {
+              background: #ddd;
+              text-align: center;
+              font-size: 7.5pt;
+              font-weight: bold;
+              padding: 0.5mm;
+              margin-bottom: 0.5mm;
+              flex-shrink: 0;
+            }
+
+            table {
+              width: 100%;
+              flex-grow: 1;
+              border-collapse: collapse;
+              table-layout: fixed;
+            }
+
+            th {
+              font-size: 6pt;
+              padding: 0.5mm 0;
+              background: #eee;
+              border: 0.4px solid #000;
+            }
+
+            td {
+              text-align: center;
+              vertical-align: middle;
+              border: 0.4px solid #000;
+              padding: 0.2mm;
+              height: 4.8mm;
+            }
+
+            .numero {
+              font-size: 6.5pt;
+              font-weight: bold;
+              line-height: 1;
+            }
+
+            .turno {
+              font-size: 5.5pt;
+              font-weight: bold;
+              margin-top: 0.2mm;
+            }
+
+            .todos {
+              display: flex;
+              flex-direction: column;
+              justify-content: center;
+              align-items: center;
+              gap: 0.1mm;
+              margin-top: 0.1mm;
+            }
+
+            .mini {
+              font-size: 4.2pt;
+              font-weight: bold;
+              white-space: nowrap;
+              line-height: 1;
+            }
+
+          </style>
+        </head>
+
+        <body>
+
+          <div class="pagina">
+
+            <div class="cabecalho">
+              <h1>CALENDÁRIO ANUAL ${ano}</h1>
+              <div class="subtitulo">
+                ESCALA ${nomeEscala} — ${descricao}
+              </div>
+            </div>
+
+            <div class="calendarios">
+              ${mesesHTML}
+            </div>
+
+          </div>
+
+          <script>
+            window.onload = function() {
+              setTimeout(function() {
+                window.print();
+              }, 700);
+            };
+          <\/script>
+
+        </body>
+        </html>
+      `;
+
+      janela.document.open();
+      janela.document.write(conteudo);
+      janela.document.close();
+    }
+
+    // =====================================
+    // INICIAR APLICATIVO
+    // =====================================
+
+    renderizarCalendario();
+
+    document.getElementById("anoPDF").value =
+      new Date().getFullYear();
+
+    // SERVICE WORKER
+    if ("serviceWorker" in navigator) {
+
+      navigator.serviceWorker.register("sw.js")
+        .then(() => console.log(
+          "Service Worker configurado com sucesso!"
+        ))
+        .catch((err) => console.log(
+          "Erro ao registrar Service Worker:", err
+        ));
+
+    }
+
+  </script>
+
+</body>
+</html>
