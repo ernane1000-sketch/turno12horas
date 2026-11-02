@@ -25,246 +25,420 @@
   </style>
 </head>
 
-<body class="min-h-screen p-4 max-w-md mx-auto pb-10">
+<body class="min-h-screen p-4 max-w-md mx-auto pb-10 flex flex-col justify-between">
 
-  <!-- ===================================== -->
-  <!-- TELA 1: CALENDÁRIO PRINCIPAL          -->
-  <!-- ===================================== -->
-  <div id="telaPrincipal">
+  <!-- CONTEÚDO PRINCIPAL -->
+  <div>
 
-    <!-- CABEÇALHO -->
-    <header class="text-center my-4">
-      <h1 class="text-2xl font-bold text-blue-400">
-        Escala Turno Rotativo
-      </h1>
-      <p id="subtituloMes"
-         class="text-xs text-slate-400 font-semibold mt-1">
-         CARREGANDO...
-      </p>
-    </header>
-
-    <!-- SELEÇÃO DE ESCALA -->
-    <div class="glass p-3 rounded-xl mb-3 text-center">
-      <label class="block text-xs text-slate-400 mb-2 font-bold">
-        SELECIONE O TIPO DE ESCALA:
-      </label>
-
-      <div class="grid grid-cols-3 gap-2">
-        <button onclick="mudarOpcaoEscala(1)"
-          id="btnEscala1"
-          class="py-1.5 rounded font-bold text-xs text-slate-900 bg-emerald-400">
-          2x2
-        </button>
-
-        <button onclick="mudarOpcaoEscala(2)"
-          id="btnEscala2"
-          class="py-1.5 rounded font-bold text-xs text-slate-900 bg-slate-300">
-          3x3
-        </button>
-
-        <button onclick="mudarOpcaoEscala(3)"
-          id="btnEscala3"
-          class="py-1.5 rounded font-bold text-xs text-slate-900 bg-slate-300">
-          4x4
-        </button>
+    <!-- TELA DE ALARME TOCANDO EM LOOP (MODAL) -->
+    <div id="modalAlarmeTocando" class="fixed inset-0 z-50 bg-slate-950/90 backdrop-blur-md flex flex-col items-center justify-center p-6 hidden">
+      <div class="w-24 h-24 rounded-full bg-red-500/20 flex items-center justify-center mb-6 animate-ping absolute"></div>
+      <div class="w-24 h-24 rounded-full bg-red-600 flex items-center justify-center mb-6 shadow-lg shadow-red-600/50 relative z-10">
+        <svg xmlns="http://www.w3.org/2000/svg" class="h-12 w-12 text-white animate-bounce" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9" />
+        </svg>
       </div>
-    </div>
+      
+      <h2 class="text-2xl font-extrabold text-white mb-2 text-center">ALARME DE TURNO!</h2>
+      <p id="textoAlertaModal" class="text-sm text-slate-300 text-center mb-8">O seu turno está prestes a começar.</p>
 
-    <!-- SELEÇÃO DE EQUIPE -->
-    <div class="glass p-3 rounded-xl mb-4 text-center">
-      <label class="block text-xs text-slate-400 mb-2 font-bold">
-        SELECIONE A EQUIPE:
-      </label>
-
-      <div class="grid grid-cols-4 gap-2">
-        <button onclick="selecionarEquipe('A')" id="btnEquipeA"
-          class="py-2 rounded font-bold text-slate-900 bg-emerald-400">A</button>
-
-        <button onclick="selecionarEquipe('B')" id="btnEquipeB"
-          class="py-2 rounded font-bold text-slate-900 bg-slate-300">B</button>
-
-        <button onclick="selecionarEquipe('C')" id="btnEquipeC"
-          class="py-2 rounded font-bold text-slate-900 bg-slate-300">C</button>
-
-        <button onclick="selecionarEquipe('D')" id="btnEquipeD"
-          class="py-2 rounded font-bold text-slate-900 bg-slate-300">D</button>
-      </div>
-    </div>
-
-    <!-- NAVEGAÇÃO DE MÊS -->
-    <div class="flex justify-between items-center mb-3 px-1">
-      <button onclick="mudarMes(-1)" id="btnMesAnt"
-        class="text-xs bg-slate-800 px-3 py-2 rounded text-slate-300 font-bold border border-slate-700">
-        &lt; ANT
-      </button>
-
-      <span id="labelMesAno"
-        class="font-bold text-sm text-slate-200">
-        DEZEMBRO / 2026
-      </span>
-
-      <button onclick="mudarMes(1)" id="btnMesProx"
-        class="text-xs bg-slate-800 px-3 py-2 rounded text-slate-300 font-bold border border-slate-700">
-        PROX &gt;
+      <button onclick="pararAlarmeSonoro()" class="w-full max-w-xs py-4 rounded-xl bg-red-600 hover:bg-red-500 text-white font-extrabold text-base transition shadow-xl border border-red-400/40 uppercase tracking-wider">
+        PARAR ALARME
       </button>
     </div>
 
-    <!-- CALENDÁRIO -->
-    <div class="glass p-3 rounded-xl mb-4">
-      <div class="grid grid-cols-7 gap-1 text-center font-bold text-xs text-slate-400 mb-2 border-b border-slate-700 pb-2">
-        <div>DOM</div>
-        <div>SEG</div>
-        <div>TER</div>
-        <div>QUA</div>
-        <div>QUI</div>
-        <div>SEX</div>
-        <div>SÁB</div>
-      </div>
+    <!-- TELA 1: CALENDÁRIO PRINCIPAL -->
+    <div id="telaPrincipal">
 
-      <div id="gridCalendario"
-        class="grid grid-cols-7 gap-1 text-center">
-      </div>
-    </div>
+      <header class="text-center my-4">
+        <h1 class="text-2xl font-bold text-blue-400">
+          Escala Turno Rotativo
+        </h1>
+        <p id="subtituloMes"
+           class="text-xs text-slate-400 font-semibold mt-1">
+           CARREGANDO...
+        </p>
+      </header>
 
-    <!-- DETALHES -->
-    <div class="glass p-4 rounded-xl border-l-4 border-blue-500 mb-4"
-         id="painelDetalhes">
+      <div class="glass p-3 rounded-xl mb-3 text-center">
+        <label class="block text-xs text-slate-400 mb-2 font-bold">
+          SELECIONE O TIPO DE ESCALA:
+        </label>
 
-      <div id="textoDiaEscala"
-        class="text-xs text-slate-400 font-semibold">
-        Detalhes do turno
-      </div>
+        <div class="grid grid-cols-3 gap-2">
+          <button onclick="mudarOpcaoEscala(1)"
+            id="btnEscala1"
+            class="py-1.5 rounded font-bold text-xs text-slate-900 bg-emerald-400">
+            2x2
+          </button>
 
-      <div id="textoTurno"
-        class="text-lg font-bold text-white mt-1">
-        Selecione um dia na tabela para ver o horário.
-      </div>
-    </div>
+          <button onclick="mudarOpcaoEscala(2)"
+            id="btnEscala2"
+            class="py-1.5 rounded font-bold text-xs text-slate-900 bg-slate-300">
+            3x3
+          </button>
 
-    <!-- LEGENDA -->
-    <div class="glass p-3 rounded-xl text-xs space-y-2 mb-4">
-      <div class="font-bold text-slate-400 text-center mb-1">
-        LEGENDA DE HORÁRIOS
-      </div>
-
-      <div class="grid grid-cols-2 gap-2">
-
-        <div class="flex items-center space-x-2">
-          <div class="w-4 h-4 rounded"
-            style="background-color: rgb(150, 200, 255);"></div>
-          <span class="text-slate-300">07:00 às 19:00h (1º)</span>
+          <button onclick="mudarOpcaoEscala(3)"
+            id="btnEscala3"
+            class="py-1.5 rounded font-bold text-xs text-slate-900 bg-slate-300">
+            4x4
+          </button>
         </div>
-
-        <div class="flex items-center space-x-2">
-          <div class="w-4 h-4 rounded"
-            style="background-color: rgb(255, 230, 80);"></div>
-          <span class="text-slate-300">19:00 às 07:00h (2º)</span>
-        </div>
-
-        <div class="flex items-center space-x-2 col-span-2">
-          <div class="w-4 h-4 rounded"
-            style="background-color: rgb(120, 230, 120);"></div>
-          <span class="text-slate-300">Folga</span>
-        </div>
-
       </div>
-    </div>
 
-    <!-- BOTÃO PARA ABRIR A TELA DE PDF -->
-    <button onclick="abrirTelaPDF()"
-      class="w-full py-3.5 rounded-xl bg-blue-600 hover:bg-blue-500 text-white font-bold text-sm transition shadow-lg flex items-center justify-center space-x-2 border border-blue-400/30">
-      <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
-      </svg>
-      <span>IMPRIMIR PDF</span>
-    </button>
-
-  </div>
-
-  <!-- ===================================== -->
-  <!-- TELA 2: GERADOR DE PDF ANUAL          -->
-  <!-- ===================================== -->
-  <div id="telaPDF" class="hidden">
-
-    <div class="flex items-center justify-between my-4">
-      <button onclick="fecharTelaPDF()" class="text-xs bg-slate-800 text-slate-300 font-bold px-3 py-2 rounded-lg border border-slate-700">
-        ← VOLTAR
-      </button>
-      <h2 class="text-lg font-bold text-blue-400">
-        Gerar Calendário PDF
-      </h2>
-      <div class="w-12"></div>
-    </div>
-
-    <div class="glass p-4 rounded-xl mt-2">
-
-      <label class="block text-xs text-slate-400 font-bold mb-1">
-        ANO DO CALENDÁRIO:
-      </label>
-
-      <input type="number" id="anoPDF"
-        value="2027" min="2026" max="2100"
-        class="w-full p-2.5 rounded bg-slate-800 text-white border border-slate-600 mb-4 focus:outline-none focus:border-blue-500">
-
-      <label class="block text-xs text-slate-400 font-bold mb-1">
-        ESCOLHA A ESCALA:
-      </label>
-
-      <select id="escalaPDF"
-        class="w-full p-2.5 rounded bg-slate-800 text-white border border-slate-600 mb-4 focus:outline-none focus:border-blue-500">
-        <option value="1">Escala 2x2</option>
-        <option value="2">Escala 3x3</option>
-        <option value="3">Escala 4x4</option>
-      </select>
-
-      <label class="block text-xs text-slate-400 font-bold mb-1">
-        O QUE DESEJA IMPRIMIR?
-      </label>
-
-      <select id="tipoPDF" onchange="atualizarSelecaoPDF()"
-        class="w-full p-2.5 rounded bg-slate-800 text-white border border-slate-600 mb-4 focus:outline-none focus:border-blue-500">
-        <option value="todas">Todas as equipes (A, B, C e D)</option>
-        <option value="uma">Somente uma equipe</option>
-      </select>
-
-      <div id="campoEquipePDF" class="hidden mb-4">
-        <label class="block text-xs text-slate-400 font-bold mb-1">
+      <div class="glass p-3 rounded-xl mb-4 text-center">
+        <label class="block text-xs text-slate-400 mb-2 font-bold">
           SELECIONE A EQUIPE:
         </label>
 
-        <select id="equipePDF"
-          class="w-full p-2.5 rounded bg-slate-800 text-white border border-slate-600 focus:outline-none focus:border-blue-500">
-          <option value="A">Equipe A</option>
-          <option value="B">Equipe B</option>
-          <option value="C">Equipe C</option>
-          <option value="D">Equipe D</option>
-        </select>
+        <div class="grid grid-cols-4 gap-2">
+          <button onclick="selecionarEquipe('A')" id="btnEquipeA"
+            class="py-2 rounded font-bold text-slate-900 bg-emerald-400">A</button>
+
+          <button onclick="selecionarEquipe('B')" id="btnEquipeB"
+            class="py-2 rounded font-bold text-slate-900 bg-slate-300">B</button>
+
+          <button onclick="selecionarEquipe('C')" id="btnEquipeC"
+            class="py-2 rounded font-bold text-slate-900 bg-slate-300">C</button>
+
+          <button onclick="selecionarEquipe('D')" id="btnEquipeD"
+            class="py-2 rounded font-bold text-slate-900 bg-slate-300">D</button>
+        </div>
       </div>
 
-      <button onclick="gerarPDF()"
-        class="w-full py-3.5 rounded-lg bg-blue-500 hover:bg-blue-600 text-white font-bold text-sm transition shadow-lg mt-2 flex items-center justify-center space-x-2">
-        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
-        </svg>
-        <span>GERAR PDF PARA IMPRESSÃO</span>
-      </button>
+      <div class="flex justify-between items-center mb-3 px-1">
+        <button onclick="mudarMes(-1)" id="btnMesAnt"
+          class="text-xs bg-slate-800 px-3 py-2 rounded text-slate-300 font-bold border border-slate-700">
+          &lt; ANT
+        </button>
 
-      <p class="text-center text-xs text-slate-400 mt-3">
-        A4 horizontal — 12 meses em uma única folha monocromática.
-      </p>
+        <span id="labelMesAno"
+          class="font-bold text-sm text-slate-200">
+          DEZEMBRO / 2026
+        </span>
+
+        <button onclick="mudarMes(1)" id="btnMesProx"
+          class="text-xs bg-slate-800 px-3 py-2 rounded text-slate-300 font-bold border border-slate-700">
+          PROX &gt;
+        </button>
+      </div>
+
+      <div class="glass p-3 rounded-xl mb-4">
+        <div class="grid grid-cols-7 gap-1 text-center font-bold text-xs text-slate-400 mb-2 border-b border-slate-700 pb-2">
+          <div>DOM</div>
+          <div>SEG</div>
+          <div>TER</div>
+          <div>QUA</div>
+          <div>QUI</div>
+          <div>SEX</div>
+          <div>SÁB</div>
+        </div>
+
+        <div id="gridCalendario"
+          class="grid grid-cols-7 gap-1 text-center">
+        </div>
+      </div>
+
+      <div class="glass p-4 rounded-xl border-l-4 border-blue-500 mb-4"
+           id="painelDetalhes">
+
+        <div id="textoDiaEscala"
+          class="text-xs text-slate-400 font-semibold">
+          Detalhes do turno
+        </div>
+
+        <div id="textoTurno"
+          class="text-lg font-bold text-white mt-1">
+          Selecione um dia na tabela para ver o horário.
+        </div>
+      </div>
+
+      <div class="glass p-3 rounded-xl text-xs space-y-2 mb-4">
+        <div class="font-bold text-slate-400 text-center mb-1">
+          LEGENDA DE HORÁRIOS
+        </div>
+
+        <div class="grid grid-cols-2 gap-2">
+
+          <div class="flex items-center space-x-2">
+            <div class="w-4 h-4 rounded"
+              style="background-color: rgb(150, 200, 255);"></div>
+            <span class="text-slate-300">07:00 às 19:00h (1º)</span>
+          </div>
+
+          <div class="flex items-center space-x-2">
+            <div class="w-4 h-4 rounded"
+              style="background-color: rgb(255, 230, 80);"></div>
+            <span class="text-slate-300">19:00 às 07:00h (2º)</span>
+          </div>
+
+          <div class="flex items-center space-x-2 col-span-2">
+            <div class="w-4 h-4 rounded"
+              style="background-color: rgb(120, 230, 120);"></div>
+            <span class="text-slate-300">Folga</span>
+          </div>
+
+        </div>
+      </div>
+
+      <div class="grid grid-cols-2 gap-2">
+        <button onclick="abrirTelaPDF()"
+          class="w-full py-3.5 rounded-xl bg-blue-600 hover:bg-blue-500 text-white font-bold text-xs transition shadow-lg flex items-center justify-center space-x-1.5 border border-blue-400/30">
+          <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+          </svg>
+          <span>IMPRIMIR PDF</span>
+        </button>
+
+        <button onclick="abrirTelaAlarme()"
+          class="w-full py-3.5 rounded-xl bg-amber-600 hover:bg-amber-500 text-white font-bold text-xs transition shadow-lg flex items-center justify-center space-x-1.5 border border-amber-400/30">
+          <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9" />
+          </svg>
+          <span>CONFIG. ALARME</span>
+        </button>
+      </div>
+
+    </div>
+
+    <!-- TELA 2: GERADOR DE PDF ANUAL -->
+    <div id="telaPDF" class="hidden">
+
+      <div class="flex items-center justify-between my-4">
+        <button onclick="fecharTelaPDF()" class="text-xs bg-slate-800 text-slate-300 font-bold px-3 py-2 rounded-lg border border-slate-700">
+          ← VOLTAR
+        </button>
+        <h2 class="text-lg font-bold text-blue-400">
+          Gerar Calendário PDF
+        </h2>
+        <div class="w-12"></div>
+      </div>
+
+      <div class="glass p-4 rounded-xl mt-2">
+
+        <label class="block text-xs text-slate-400 font-bold mb-1">
+          ANO DO CALENDÁRIO:
+        </label>
+
+        <input type="number" id="anoPDF"
+          value="2027" min="2026" max="2100"
+          class="w-full p-2.5 rounded bg-slate-800 text-white border border-slate-600 mb-4 focus:outline-none focus:border-blue-500">
+
+        <label class="block text-xs text-slate-400 font-bold mb-1">
+          ESCOLHA A ESCALA:
+        </label>
+
+        <select id="escalaPDF"
+          class="w-full p-2.5 rounded bg-slate-800 text-white border border-slate-600 mb-4 focus:outline-none focus:border-blue-500">
+          <option value="1">Escala 2x2</option>
+          <option value="2">Escala 3x3</option>
+          <option value="3">Escala 4x4</option>
+        </select>
+
+        <label class="block text-xs text-slate-400 font-bold mb-1">
+          O QUE DESEJA IMPRIMIR?
+        </label>
+
+        <select id="tipoPDF" onchange="atualizarSelecaoPDF()"
+          class="w-full p-2.5 rounded bg-slate-800 text-white border border-slate-600 mb-4 focus:outline-none focus:border-blue-500">
+          <option value="todas">Todas as equipes (A, B, C e D)</option>
+          <option value="uma">Somente uma equipe</option>
+        </select>
+
+        <div id="campoEquipePDF" class="hidden mb-4">
+          <label class="block text-xs text-slate-400 font-bold mb-1">
+            SELECIONE A EQUIPE:
+          </label>
+
+          <select id="equipePDF"
+            class="w-full p-2.5 rounded bg-slate-800 text-white border border-slate-600 focus:outline-none focus:border-blue-500">
+            <option value="A">Equipe A</option>
+            <option value="B">Equipe B</option>
+            <option value="C">Equipe C</option>
+            <option value="D">Equipe D</option>
+          </select>
+        </div>
+
+        <button onclick="gerarPDF()"
+          class="w-full py-3.5 rounded-lg bg-blue-500 hover:bg-blue-600 text-white font-bold text-sm transition shadow-lg mt-2 flex items-center justify-center space-x-2">
+          <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+          </svg>
+          <span>GERAR PDF PARA IMPRESSÃO</span>
+        </button>
+
+        <p class="text-center text-xs text-slate-400 mt-3">
+          A4 horizontal — 12 meses em uma única folha monocromática.
+        </p>
+
+      </div>
+
+    </div>
+
+    <!-- TELA 3: CONFIGURAÇÃO DE ALARMES -->
+    <div id="telaAlarme" class="hidden">
+
+      <div class="flex items-center justify-between my-4">
+        <button onclick="fecharTelaAlarme()" class="text-xs bg-slate-800 text-slate-300 font-bold px-3 py-2 rounded-lg border border-slate-700">
+          ← VOLTAR
+        </button>
+        <h2 class="text-lg font-bold text-amber-400">
+          Configuração de Alarme
+        </h2>
+        <div class="w-12"></div>
+      </div>
+
+      <div class="glass p-4 rounded-xl mt-2 space-y-3">
+
+        <div>
+          <label class="block text-xs text-slate-400 font-bold mb-1">
+            SELECIONE A EQUIPE (LETRA):
+          </label>
+          <select id="equipeAlarme"
+            class="w-full p-2.5 rounded bg-slate-800 text-white border border-slate-600 focus:outline-none focus:border-amber-500 text-sm">
+            <option value="A">Equipe A</option>
+            <option value="B">Equipe B</option>
+            <option value="C">Equipe C</option>
+            <option value="D">Equipe D</option>
+          </select>
+        </div>
+
+        <div>
+          <label class="block text-xs text-slate-400 font-bold mb-1">
+            SELECIONE A ESCALA:
+          </label>
+          <select id="escalaAlarme"
+            class="w-full p-2.5 rounded bg-slate-800 text-white border border-slate-600 focus:outline-none focus:border-amber-500 text-sm">
+            <option value="1">Escala 2x2</option>
+            <option value="2">Escala 3x3</option>
+            <option value="3">Escala 4x4</option>
+          </select>
+        </div>
+
+        <div>
+          <label class="block text-xs text-slate-400 font-bold mb-1">
+            PERÍODO DOS ALARMES:
+          </label>
+          <select id="tipoPeriodoAlarme"
+            class="w-full p-2.5 rounded bg-slate-800 text-white border border-slate-600 focus:outline-none focus:border-amber-500 text-sm">
+            <option value="fim_mes">Até o fim do mês atual</option>
+            <option value="fim_ano">Até o fim do ano atual</option>
+          </select>
+        </div>
+
+        <div>
+          <div class="flex justify-between items-center mb-1">
+            <label class="block text-xs text-slate-400 font-bold">
+              ANTECEDÊNCIA DO ALARME:
+            </label>
+            <span id="labelAntecedencia" class="text-amber-400 font-bold text-sm">30 minutos antes</span>
+          </div>
+          
+          <input type="range" id="rangeAntecedencia" min="1" max="60" value="30"
+            oninput="atualizarValorRange(this.value)"
+            class="w-full accent-amber-500 cursor-pointer bg-slate-700 h-2 rounded">
+            
+          <div class="flex justify-between text-[10px] text-slate-400 mt-1">
+            <span>1 min</span>
+            <span>30 min</span>
+            <span>60 min</span>
+          </div>
+        </div>
+
+        <button onclick="salvarAlarmes()"
+          class="w-full py-3.5 rounded-lg bg-amber-500 hover:bg-amber-600 text-white font-bold text-sm transition shadow-lg mt-2 flex items-center justify-center space-x-2">
+          <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" />
+          </svg>
+          <span>ATIVAR ALARMES</span>
+        </button>
+
+        <!-- LISTA DE ALARMES CRIADOS -->
+        <div class="mt-4 border-t border-slate-700 pt-3">
+          <div class="flex justify-between items-center mb-2">
+            <span class="text-xs text-slate-300 font-bold uppercase">Alarmes Ativos</span>
+            <button onclick="limparTodosAlarmes()" class="text-[10px] text-red-400 hover:underline font-bold">Desativar Todos</button>
+          </div>
+          
+          <div id="listaAlarmesContainer" class="space-y-2 max-h-48 overflow-y-auto pr-1">
+            <p class="text-xs text-slate-500 text-center py-2">Nenhum alarme ativado.</p>
+          </div>
+        </div>
+
+      </div>
 
     </div>
 
   </div>
 
+  <!-- RODAPÉ COM ASSINATURA DISCRETA -->
+  <footer class="text-center mt-6 pt-3 border-t border-slate-800/60">
+    <p class="text-[10px] text-slate-500 font-medium tracking-wide">
+      Desenvolvido por Ernane Nunes Dos Santos
+    </p>
+  </footer>
+
   <script>
 
-    // =====================================
-    // CONTROLE DAS TELAS
-    // =====================================
+    let listaAlarmesCriados = [];
+    let intervaloAlarmeLoop = null;
+    let audioCtxGlobal = null;
+
+    function iniciarAlarmeSonoroLoop(mensagem) {
+      document.getElementById("textoAlertaModal").innerText = mensagem;
+      document.getElementById("modalAlarmeTocando").classList.remove("hidden");
+
+      if (intervaloAlarmeLoop) return;
+
+      tocarCicloSirene();
+      intervaloAlarmeLoop = setInterval(() => {
+        tocarCicloSirene();
+      }, 2000);
+    }
+
+    function tocarCicloSirene() {
+      try {
+        if (!audioCtxGlobal || audioCtxGlobal.state === 'closed') {
+          audioCtxGlobal = new (window.AudioContext || window.webkitAudioContext)();
+        }
+        if (audioCtxGlobal.state === 'suspended') {
+          audioCtxGlobal.resume();
+        }
+
+        const tempoInicio = audioCtxGlobal.currentTime;
+        for (let i = 0; i < 6; i++) {
+          const osc = audioCtxGlobal.createOscillator();
+          const gain = audioCtxGlobal.createGain();
+          
+          osc.type = 'sawtooth';
+          const freq = (i % 2 === 0) ? 950 : 1300;
+          osc.frequency.setValueAtTime(freq, tempoInicio + (i * 0.3));
+          
+          gain.gain.setValueAtTime(0.6, tempoInicio + (i * 0.3));
+          gain.gain.exponentialRampToValueAtTime(0.01, tempoInicio + (i * 0.3) + 0.25);
+          
+          osc.connect(gain);
+          gain.connect(audioCtxGlobal.destination);
+          
+          osc.start(tempoInicio + (i * 0.3));
+          osc.stop(tempoInicio + (i * 0.3) + 0.25);
+        }
+      } catch (e) {
+        console.log("Erro no áudio:", e);
+      }
+    }
+
+    function pararAlarmeSonoro() {
+      if (intervaloAlarmeLoop) {
+        clearInterval(intervaloAlarmeLoop);
+        intervaloAlarmeLoop = null;
+      }
+      document.getElementById("modalAlarmeTocando").classList.add("hidden");
+    }
 
     function abrirTelaPDF() {
       document.getElementById("telaPrincipal").classList.add("hidden");
+      document.getElementById("telaAlarme").classList.add("hidden");
       document.getElementById("telaPDF").classList.remove("hidden");
     }
 
@@ -273,18 +447,100 @@
       document.getElementById("telaPrincipal").classList.remove("hidden");
     }
 
-    // =====================================
-    // ORIENTAÇÃO DO APLICATIVO
-    // =====================================
+    function abrirTelaAlarme() {
+      document.getElementById("telaPrincipal").classList.add("hidden");
+      document.getElementById("telaPDF").classList.add("hidden");
+      document.getElementById("telaAlarme").classList.remove("hidden");
+      document.getElementById("equipeAlarme").value = equipeSelecionada;
+      document.getElementById("escalaAlarme").value = opcaoEscalaSelecionada;
+      renderizarListaAlarmes();
+    }
+
+    function fecharTelaAlarme() {
+      document.getElementById("telaAlarme").classList.add("hidden");
+      document.getElementById("telaPrincipal").classList.remove("hidden");
+    }
+
+    function atualizarValorRange(val) {
+      document.getElementById("labelAntecedencia").innerText = val + " minutos antes";
+    }
+
+    function salvarAlarmes() {
+      const equipeEscolhida = document.getElementById("equipeAlarme").value;
+      const escalaEscolhida = Number(document.getElementById("escalaAlarme").value);
+      const tipoPeriodo = document.getElementById("tipoPeriodoAlarme").value;
+      const antecedencia = Number(document.getElementById("rangeAntecedencia").value);
+      
+      const ano = dataAtual.getFullYear();
+      const mesInicio = dataAtual.getMonth();
+      const mesFim = tipoPeriodo === 'fim_mes' ? mesInicio : 11;
+
+      let novosAlarmes = [];
+      const nomeEscala = escalaEscolhida === 1 ? '2x2' : escalaEscolhida === 2 ? '3x3' : '4x4';
+
+      for (let m = mesInicio; m <= mesFim; m++) {
+        const totalDias = new Date(ano, m + 1, 0).getDate();
+        for (let d = 1; d <= totalDias; d++) {
+          const horario = obterDadosDia(ano, m, d, equipeEscolhida, escalaEscolhida);
+          if (horario !== "Folga") {
+            const horaInicioStr = horario.split(" ")[0]; 
+
+            novosAlarmes.push({
+              id: Date.now() + Math.random(),
+              data: `${d < 10 ? '0'+d : d}/${(m+1) < 10 ? '0'+(m+1) : (m+1)}/${ano}`,
+              turno: horaInicioStr,
+              antecedencia: antecedencia,
+              equipe: equipeEscolhida,
+              escala: nomeEscala
+            });
+          }
+        }
+      }
+
+      listaAlarmesCriados = [...novosAlarmes, ...listaAlarmesCriados];
+      renderizarListaAlarmes();
+      
+      alert(`Foram ativados ${novosAlarmes.length} alarmes para a Equipe ${equipeEscolhida} na Escala ${nomeEscala}!`);
+    }
+
+    function desativarAlarme(id) {
+      listaAlarmesCriados = listaAlarmesCriados.filter(a => a.id !== id);
+      renderizarListaAlarmes();
+    }
+
+    function limparTodosAlarmes() {
+      listaAlarmesCriados = [];
+      renderizarListaAlarmes();
+    }
+
+    function renderizarListaAlarmes() {
+      const container = document.getElementById("listaAlarmesContainer");
+      if (listaAlarmesCriados.length === 0) {
+        container.innerHTML = `<p class="text-xs text-slate-500 text-center py-2">Nenhum alarme ativado.</p>`;
+        return;
+      }
+
+      let html = "";
+      listaAlarmesCriados.forEach(alarme => {
+        html += `
+          <div class="flex items-center justify-between bg-slate-900/80 p-2 rounded border border-slate-700 text-xs">
+            <div>
+              <span class="font-bold text-amber-400">${alarme.data}</span> — Início: <span class="text-white">${alarme.turno}</span>
+              <div class="text-[10px] text-slate-400">Equipe ${alarme.equipe} (${alarme.escala}) • ${alarme.antecedencia} min antes</div>
+            </div>
+            <button onclick="desativarAlarme(${alarme.id})" class="bg-red-500/20 text-red-400 hover:bg-red-500 hover:text-white px-2 py-1 rounded text-[10px] font-bold transition">
+              Desativar
+            </button>
+          </div>
+        `;
+      });
+      container.innerHTML = html;
+    }
 
     if (window.screen && window.screen.orientation &&
         window.screen.orientation.lock) {
       window.screen.orientation.lock("portrait").catch(() => {});
     }
-
-    // =====================================
-    // ESCALA 2x2 - CICLO DE 8 DIAS
-    // =====================================
 
     const ciclo1 = [
       ["07:00 às 19:00", "Folga", "19:00 às 07:00", "Folga"],
@@ -296,10 +552,6 @@
       ["Folga", "19:00 às 07:00", "Folga", "07:00 às 19:00"],
       ["Folga", "19:00 às 07:00", "Folga", "07:00 às 19:00"]
     ];
-
-    // =====================================
-    // ESCALA 3x3 - CICLO DE 12 DIAS
-    // =====================================
 
     const ciclo2 = [
       ["07:00 às 19:00", "19:00 às 07:00", "Folga", "Folga"],
@@ -319,27 +571,19 @@
       ["Folga", "Folga", "19:00 às 07:00", "07:00 às 19:00"]
     ];
 
-    // =====================================
-    // ESCALA 4x4 - CICLO DE 8 DIAS (CORRETO E SINCRONIZADO)
-    // =====================================
-
     const ciclo3 = [
-  ["07:00 às 19:20", "19:00 às 07:20", "Folga", "Folga"],
-  ["07:00 às 19:20", "19:00 às 07:20", "Folga", "Folga"],
+      ["07:00 às 19:20", "19:00 às 07:20", "Folga", "Folga"],
+      ["07:00 às 19:20", "19:00 às 07:20", "Folga", "Folga"],
 
-  ["19:00 às 07:20", "Folga", "07:00 às 19:20", "Folga"],
-  ["19:00 às 07:20", "Folga", "07:00 às 19:20", "Folga"],
+      ["19:00 às 07:20", "Folga", "07:00 às 19:20", "Folga"],
+      ["19:00 às 07:20", "Folga", "07:00 às 19:20", "Folga"],
 
-  ["Folga", "Folga", "19:00 às 07:20", "07:00 às 19:20"],
-  ["Folga", "Folga", "19:00 às 07:20", "07:00 às 19:20"],
+      ["Folga", "Folga", "19:00 às 07:20", "07:00 às 19:20"],
+      ["Folga", "Folga", "19:00 às 07:20", "07:00 às 19:20"],
 
-  ["Folga", "07:00 às 19:20", "Folga", "19:00 às 07:20"],
-  ["Folga", "07:00 às 19:20", "Folga", "19:00 às 07:20"]
-];
-
-    // =====================================
-    // CONFIGURAÇÕES
-    // =====================================
+      ["Folga", "07:00 às 19:20", "Folga", "19:00 às 07:20"],
+      ["Folga", "07:00 às 19:20", "Folga", "19:00 às 07:20"]
+    ];
 
     const nomesMeses = [
       "JANEIRO", "FEVEREIRO", "MARÇO", "ABRIL",
@@ -355,178 +599,96 @@
     let equipeSelecionada = "A";
     let dataAtual = new Date(2026, 11, 1);
 
-    // =====================================
-    // OBTER CICLO
-    // =====================================
-
     function obterCiclo(opcao) {
-
       if (opcao === 2) return ciclo2;
       if (opcao === 3) return ciclo3;
-
       return ciclo1;
     }
 
-    // =====================================
-    // MUDAR ESCALA
-    // =====================================
-
     function mudarOpcaoEscala(opcao) {
-
       opcaoEscalaSelecionada = opcao;
-
       [1, 2, 3].forEach(op => {
-
         const btn = document.getElementById("btnEscala" + op);
-
         btn.className = op === opcao
           ? "py-1.5 rounded font-bold text-xs text-slate-900 bg-emerald-400 transition"
           : "py-1.5 rounded font-bold text-xs text-slate-900 bg-slate-300 transition";
-
       });
-
       renderizarCalendario();
     }
 
-    // =====================================
-    // CALCULAR TURNO
-    // =====================================
-
     function obterDadosDia(ano, mes, dia, equipe, opcao) {
-
       const data = Date.UTC(ano, mes, dia);
       const base = Date.UTC(2026, 11, 16);
-
       const diferenca = data - base;
-
-      const dias = Math.floor(
-        diferenca / (24 * 60 * 60 * 1000)
-      );
-
-      const cicloSelecionado = obterCiclo(
-        opcao || opcaoEscalaSelecionada
-      );
-
+      const dias = Math.floor(diferenca / (24 * 60 * 60 * 1000));
+      const cicloSelecionado = obterCiclo(opcao || opcaoEscalaSelecionada);
       let indice = dias % cicloSelecionado.length;
-
       if (indice < 0) {
         indice += cicloSelecionado.length;
       }
-
       const coluna = ["A", "B", "C", "D"].indexOf(equipe);
-
       return cicloSelecionado[indice][coluna];
     }
 
-    // =====================================
-    // SELECIONAR EQUIPE
-    // =====================================
-
     function selecionarEquipe(equipe) {
-
       equipeSelecionada = equipe;
-
       ["A", "B", "C", "D"].forEach(e => {
-
         const btn = document.getElementById("btnEquipe" + e);
-
         btn.className = e === equipe
           ? "py-2 rounded font-bold text-slate-900 bg-emerald-400 transition"
           : "py-2 rounded font-bold text-slate-900 bg-slate-300 transition";
-
       });
-
       renderizarCalendario();
     }
-
-    // =====================================
-    // MUDAR MÊS
-    // =====================================
 
     function mudarMes(delta) {
-
       dataAtual.setMonth(dataAtual.getMonth() + delta);
-
       renderizarCalendario();
     }
 
-    // =====================================
-    // SELECIONAR DIA
-    // =====================================
-
     function selecionarDia(dia) {
-
       const ano = dataAtual.getFullYear();
       const mes = dataAtual.getMonth();
-
-      const horario = obterDadosDia(
-        ano, mes, dia, equipeSelecionada
-      );
-
-      const nomeEscala =
-        opcaoEscalaSelecionada === 1 ? "2x2" :
-        opcaoEscalaSelecionada === 2 ? "3x3" : "4x4";
+      const horario = obterDadosDia(ano, mes, dia, equipeSelecionada);
+      const nomeEscala = opcaoEscalaSelecionada === 1 ? "2x2" : opcaoEscalaSelecionada === 2 ? "3x3" : "4x4";
 
       document.getElementById("textoDiaEscala").innerText =
         `Escala ${nomeEscala} — Equipe ${equipeSelecionada} — Dia ${dia}/${mes + 1}/${ano}`;
-
       document.getElementById("textoTurno").innerText = horario;
     }
 
-    // =====================================
-    // DESENHAR CALENDÁRIO
-    // =====================================
-
     function renderizarCalendario() {
-
       const ano = dataAtual.getFullYear();
       const mes = dataAtual.getMonth();
-
-      const nomeEscala =
-        opcaoEscalaSelecionada === 1 ? "2x2" :
-        opcaoEscalaSelecionada === 2 ? "3x3" : "4x4";
+      const nomeEscala = opcaoEscalaSelecionada === 1 ? "2x2" : opcaoEscalaSelecionada === 2 ? "3x3" : "4x4";
 
       document.getElementById("subtituloMes").innerText =
         `${nomesMeses[mes]} / ${ano} — ESCALA ${nomeEscala} (EQ. ${equipeSelecionada})`;
-
       document.getElementById("labelMesAno").innerText =
         `${nomesMeses[mes]} / ${ano}`;
 
       const mesAntIdx = mes === 0 ? 11 : mes - 1;
       const mesProxIdx = mes === 11 ? 0 : mes + 1;
 
-      document.getElementById("btnMesAnt").innerText =
-        `< ${nomesMeses[mesAntIdx].slice(0,3)}`;
-
-      document.getElementById("btnMesProx").innerText =
-        `${nomesMeses[mesProxIdx].slice(0,3)} >`;
+      document.getElementById("btnMesAnt").innerText = `< ${nomesMeses[mesAntIdx].slice(0,3)}`;
+      document.getElementById("btnMesProx").innerText = `${nomesMeses[mesProxIdx].slice(0,3)} >`;
 
       const grid = document.getElementById("gridCalendario");
-
       grid.innerHTML = "";
 
-      const primeiroDiaSemana =
-        new Date(ano, mes, 1).getDay();
-
-      const totalDias =
-        new Date(ano, mes + 1, 0).getDate();
+      const primeiroDiaSemana = new Date(ano, mes, 1).getDay();
+      const totalDias = new Date(ano, mes + 1, 0).getDate();
 
       for (let i = 0; i < primeiroDiaSemana; i++) {
         grid.appendChild(document.createElement("div"));
       }
 
       for (let dia = 1; dia <= totalDias; dia++) {
-
-        const horario = obterDadosDia(
-          ano, mes, dia, equipeSelecionada
-        );
-
+        const horario = obterDadosDia(ano, mes, dia, equipeSelecionada);
         const celula = document.createElement("button");
 
         celula.innerText = dia;
-
-        celula.className =
-          "py-2 font-bold text-xs rounded border border-white/20 transition text-slate-900";
+        celula.className = "py-2 font-bold text-xs rounded border border-white/20 transition text-slate-900";
 
         if (horario === "Folga") {
           celula.style.backgroundColor = "rgb(120, 230, 120)";
@@ -537,50 +699,26 @@
         }
 
         celula.onclick = () => selecionarDia(dia);
-
         grid.appendChild(celula);
       }
 
-      document.getElementById("textoDiaEscala").innerText =
-        "Detalhes do turno";
-
-      document.getElementById("textoTurno").innerText =
-        "Selecione um dia na tabela para ver o horário.";
+      document.getElementById("textoDiaEscala").innerText = "Detalhes do turno";
+      document.getElementById("textoTurno").innerText = "Selecione um dia na tabela para ver o horário.";
     }
-
-    // =====================================
-    // CONFIGURAR OPÇÕES DO PDF
-    // =====================================
 
     function atualizarSelecaoPDF() {
-
       const tipo = document.getElementById("tipoPDF").value;
-
-      document.getElementById("campoEquipePDF").classList.toggle(
-        "hidden", tipo !== "uma"
-      );
-
+      document.getElementById("campoEquipePDF").classList.toggle("hidden", tipo !== "uma");
     }
 
-    // =====================================
-    // CÓDIGO RESUMIDO DO TURNO
-    // =====================================
-
     function codigoTurno(horario) {
-
       if (horario === "Folga") return "Folga";
       if (horario.startsWith("07:00")) return "Dia";
       if (horario.startsWith("19:00")) return "Noite";
-
       return "";
     }
 
-    // =====================================
-    // MONTAR MÊS PARA O PDF
-    // =====================================
-
     function montarMesPDF(ano, mes, opcao, tipo, equipe) {
-
       const primeiroDia = new Date(ano, mes, 1).getDay();
       const totalDias = new Date(ano, mes + 1, 0).getDate();
 
@@ -599,68 +737,39 @@
       let dia = 1;
 
       for (let semana = 0; semana < 6; semana++) {
-
         html += "<tr>";
-
         for (let coluna = 0; coluna < 7; coluna++) {
-
-          if ((semana === 0 && coluna < primeiroDia) ||
-              dia > totalDias) {
-
+          if ((semana === 0 && coluna < primeiroDia) || dia > totalDias) {
             html += "<td></td>";
-
           } else {
-
             if (tipo === "uma") {
-
-              const horario = obterDadosDia(
-                ano, mes, dia, equipe, opcao
-              );
-
+              const horario = obterDadosDia(ano, mes, dia, equipe, opcao);
               const codigo = (horario === "Folga") ? "Folga" : (horario.startsWith("07:00") ? "Dia" : "Noite");
-
               html += `
                 <td>
                   <div class="numero">${dia}</div>
                   <div class="turno">${codigo}</div>
                 </td>
               `;
-
             } else {
-
               let turnos = "";
-
               ["A", "B", "C", "D"].forEach(letra => {
-
-                const horario = obterDadosDia(
-                  ano, mes, dia, letra, opcao
-                );
-
+                const horario = obterDadosDia(ano, mes, dia, letra, opcao);
                 const codigo = codigoTurno(horario);
-
                 if (codigo !== "Folga") {
-                  turnos += `
-                    <div class="mini">
-                      ${letra} (${codigo})
-                    </div>
-                  `;
+                  turnos += `<div class="mini">${letra} (${codigo})</div>`;
                 }
-
               });
-
               html += `
                 <td>
                   <div class="numero">${dia}</div>
                   <div class="todos">${turnos}</div>
                 </td>
               `;
-
             }
-
             dia++;
           }
         }
-
         html += "</tr>";
       }
 
@@ -669,26 +778,13 @@
           </table>
         </div>
       `;
-
       return html;
     }
 
-    // =====================================
-    // GERAR PDF / IMPRESSÃO A4 (PRETO E BRANCO)
-    // =====================================
-
     function gerarPDF() {
-
-      const ano = Number(
-        document.getElementById("anoPDF").value
-      );
-
-      const opcao = Number(
-        document.getElementById("escalaPDF").value
-      );
-
+      const ano = Number(document.getElementById("anoPDF").value);
+      const opcao = Number(document.getElementById("escalaPDF").value);
       const tipo = document.getElementById("tipoPDF").value;
-
       const equipe = document.getElementById("equipePDF").value;
 
       if (!Number.isInteger(ano) || ano < 2026 || ano > 2100) {
@@ -696,27 +792,18 @@
         return;
       }
 
-      const nomeEscala =
-        opcao === 1 ? "2x2" :
-        opcao === 2 ? "3x3" : "4x4";
-
-      const descricao = tipo === "todas"
-        ? "EQUIPES EM SERVIÇO (A, B, C, D)"
-        : "EQUIPE " + equipe;
+      const nomeEscala = opcao === 1 ? "2x2" : opcao === 2 ? "3x3" : "4x4";
+      const descricao = tipo === "todas" ? "EQUIPES EM SERVIÇO (A, B, C, D)" : "EQUIPE " + equipe;
 
       const janela = window.open("", "_blank");
-
       if (!janela) {
         alert("O navegador bloqueou a abertura do PDF. Permita pop-ups e tente novamente.");
         return;
       }
 
       let mesesHTML = "";
-
       for (let mes = 0; mes < 12; mes++) {
-        mesesHTML += montarMesPDF(
-          ano, mes, opcao, tipo, equipe
-        );
+        mesesHTML += montarMesPDF(ano, mes, opcao, tipo, equipe);
       }
 
       const conteudo = `
@@ -724,158 +811,40 @@
         <html lang="pt-BR">
         <head>
           <meta charset="UTF-8">
-
           <title>Calendário ${ano} - Turno Rotativo</title>
-
           <style>
-
-            @page {
-              size: A4 landscape;
-              margin: 3mm;
-            }
-
-            * {
-              box-sizing: border-box;
-            }
-
-            html, body {
-              margin: 0;
-              padding: 0;
-              width: 100%;
-              font-family: Arial, sans-serif;
-              color: #000;
-              background: #fff;
-            }
-
-            .pagina {
-              width: 291mm;
-              height: 204mm;
-              display: flex;
-              flex-direction: column;
-              justify-content: space-between;
-              padding: 1mm 0;
-            }
-
-            .cabecalho {
-              text-align: center;
-              flex-shrink: 0;
-            }
-
-            h1 {
-              font-size: 12pt;
-              margin: 0 0 0.5mm;
-            }
-
-            .subtitulo {
-              font-size: 7pt;
-              font-weight: bold;
-            }
-
-            .calendarios {
-              display: grid;
-              grid-template-columns: repeat(4, minmax(0, 1fr));
-              grid-template-rows: repeat(3, minmax(0, 1fr));
-              gap: 2mm;
-              width: 100%;
-              flex-grow: 1;
-            }
-
-            .mes {
-              border: 0.5px solid #000;
-              padding: 1mm;
-              display: flex;
-              flex-direction: column;
-              background: #fff;
-            }
-
-            .titulo-mes {
-              background: #ddd;
-              text-align: center;
-              font-size: 7.5pt;
-              font-weight: bold;
-              padding: 0.5mm;
-              margin-bottom: 0.5mm;
-              flex-shrink: 0;
-            }
-
-            table {
-              width: 100%;
-              flex-grow: 1;
-              border-collapse: collapse;
-              table-layout: fixed;
-            }
-
-            th {
-              font-size: 6pt;
-              padding: 0.5mm 0;
-              background: #eee;
-              border: 0.4px solid #000;
-            }
-
-            td {
-              text-align: center;
-              vertical-align: middle;
-              border: 0.4px solid #000;
-              padding: 0.2mm;
-              height: 4.8mm;
-            }
-
-            .numero {
-              font-size: 6.5pt;
-              font-weight: bold;
-              line-height: 1;
-            }
-
-            .turno {
-              font-size: 5.5pt;
-              font-weight: bold;
-              margin-top: 0.2mm;
-            }
-
-            .todos {
-              display: flex;
-              flex-direction: column;
-              justify-content: center;
-              align-items: center;
-              gap: 0.1mm;
-              margin-top: 0.1mm;
-            }
-
-            .mini {
-              font-size: 4.2pt;
-              font-weight: bold;
-              white-space: nowrap;
-              line-height: 1;
-            }
-
+            @page { size: A4 landscape; margin: 3mm; }
+            * { box-sizing: border-box; }
+            html, body { margin: 0; padding: 0; width: 100%; font-family: Arial, sans-serif; color: #000; background: #fff; }
+            .pagina { width: 291mm; height: 204mm; display: flex; flex-direction: column; justify-content: space-between; padding: 1mm 0; }
+            .cabecalho { text-align: center; flex-shrink: 0; }
+            h1 { font-size: 12pt; margin: 0 0 0.5mm; }
+            .subtitulo { font-size: 7pt; font-weight: bold; }
+            .calendarios { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); grid-template-rows: repeat(3, minmax(0, 1fr)); gap: 2mm; width: 100%; flex-grow: 1; }
+            .mes { border: 0.5px solid #000; padding: 1mm; display: flex; flex-direction: column; background: #fff; }
+            .titulo-mes { background: #ddd; text-align: center; font-size: 7.5pt; font-weight: bold; padding: 0.5mm; margin-bottom: 0.5mm; flex-shrink: 0; }
+            table { width: 100%; flex-grow: 1; border-collapse: collapse; table-layout: fixed; }
+            th { font-size: 6pt; padding: 0.5mm 0; background: #eee; border: 0.4px solid #000; }
+            td { text-align: center; vertical-align: middle; border: 0.4px solid #000; padding: 0.2mm; height: 4.8mm; }
+            .numero { font-size: 6.5pt; font-weight: bold; line-height: 1; }
+            .turno { font-size: 5.5pt; font-weight: bold; margin-top: 0.2mm; }
+            .todos { display: flex; flex-direction: column; justify-content: center; align-items: center; gap: 0.1mm; margin-top: 0.1mm; }
+            .mini { font-size: 4.2pt; font-weight: bold; white-space: nowrap; line-height: 1; }
           </style>
         </head>
-
         <body>
-
           <div class="pagina">
-
             <div class="cabecalho">
               <h1>CALENDÁRIO ANUAL ${ano}</h1>
-              <div class="subtitulo">
-                ESCALA ${nomeEscala} — ${descricao}
-              </div>
+              <div class="subtitulo">ESCALA ${nomeEscala} — ${descricao}</div>
             </div>
-
-            <div class="calendarios">
-              ${mesesHTML}
-            </div>
-
+            <div class="calendarios">${mesesHTML}</div>
           </div>
-
           <script>
             window.onload = function() {
-              setTimeout(function() {
-                window.print();
-              }, 700);
+              setTimeout(function() { window.print(); }, 700);
             };
           <\/script>
-
         </body>
         </html>
       `;
@@ -885,26 +854,11 @@
       janela.document.close();
     }
 
-    // =====================================
-    // INICIAR APLICATIVO
-    // =====================================
-
     renderizarCalendario();
+    document.getElementById("anoPDF").value = new Date().getFullYear();
 
-    document.getElementById("anoPDF").value =
-      new Date().getFullYear();
-
-    // SERVICE WORKER
     if ("serviceWorker" in navigator) {
-
-      navigator.serviceWorker.register("sw.js")
-        .then(() => console.log(
-          "Service Worker configurado com sucesso!"
-        ))
-        .catch((err) => console.log(
-          "Erro ao registrar Service Worker:", err
-        ));
-
+      navigator.serviceWorker.register("sw.js").catch(() => {});
     }
 
   </script>
