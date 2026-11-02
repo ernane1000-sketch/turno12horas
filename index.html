@@ -384,6 +384,23 @@
     let intervaloAlarmeLoop = null;
     let audioCtxGlobal = null;
 
+    // CARREGAR ALARMES SALVOS AO ABRIR O APP
+    function carregarAlarmesSalvos() {
+      const salvos = localStorage.getItem("meus_alarmes_turno");
+      if (salvos) {
+        try {
+          listaAlarmesCriados = JSON.parse(salvos);
+        } catch(e) {
+          listaAlarmesCriados = [];
+        }
+      }
+    }
+
+    // SALVAR ALARMES NO ARMAZENAMENTO LOCAL DO TELEMÓVEL
+    function persistirAlarmes() {
+      localStorage.setItem("meus_alarmes_turno", JSON.stringify(listaAlarmesCriados));
+    }
+
     function iniciarAlarmeSonoroLoop(mensagem) {
       document.getElementById("textoAlertaModal").innerText = mensagem;
       document.getElementById("modalAlarmeTocando").classList.remove("hidden");
@@ -498,6 +515,7 @@
       }
 
       listaAlarmesCriados = [...novosAlarmes, ...listaAlarmesCriados];
+      persistirAlarmes();
       renderizarListaAlarmes();
       
       alert(`Foram ativados ${novosAlarmes.length} alarmes para a Equipe ${equipeEscolhida} na Escala ${nomeEscala}!`);
@@ -505,11 +523,13 @@
 
     function desativarAlarme(id) {
       listaAlarmesCriados = listaAlarmesCriados.filter(a => a.id !== id);
+      persistirAlarmes();
       renderizarListaAlarmes();
     }
 
     function limparTodosAlarmes() {
       listaAlarmesCriados = [];
+      persistirAlarmes();
       renderizarListaAlarmes();
     }
 
@@ -567,7 +587,7 @@
       ["19:00 às 07:00", "07:00 às 19:00", "Folga", "Folga"],
 
       ["Folga", "Folga", "19:00 às 07:00", "07:00 às 19:00"],
-      ["Folga", "Folga", "19:00 às 07:00", "07:00 às 19:00"],
+      ["Folga", "Folga", "19:00 às 07:00", "Folga", "Folga"],
       ["Folga", "Folga", "19:00 às 07:00", "07:00 às 19:00"]
     ];
 
@@ -854,6 +874,8 @@
       janela.document.close();
     }
 
+    // Inicialização ao carregar a página
+    carregarAlarmesSalvos();
     renderizarCalendario();
     document.getElementById("anoPDF").value = new Date().getFullYear();
 
