@@ -1,4 +1,3 @@
-
 <!DOCTYPE html>
 <html lang="pt-BR">
 <head>
@@ -171,7 +170,7 @@
       </div>
     </div>
 
-    <!-- BOTÃO PARA ABRIR A TELA DE PDF NO FINAL DA PRIMEIRA TELA -->
+    <!-- BOTÃO PARA ABRIR A TELA DE PDF -->
     <button onclick="abrirTelaPDF()"
       class="w-full py-3.5 rounded-xl bg-blue-600 hover:bg-blue-500 text-white font-bold text-sm transition shadow-lg flex items-center justify-center space-x-2 border border-blue-400/30">
       <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -321,19 +320,22 @@
     ];
 
     // =====================================
-    // ESCALA 4x4 - CICLO DE 8 DIAS
+    // ESCALA 4x4 - CICLO DE 8 DIAS (CORRETO E SINCRONIZADO)
     // =====================================
 
     const ciclo3 = [
-      ["07:00 às 19:00", "19:00 às 07:00", "Folga", "Folga"],
-      ["07:00 às 19:00", "19:00 às 07:00", "Folga", "Folga"],
-      ["19:00 às 07:00", "Folga", "07:00 às 19:00", "Folga"],
-      ["19:00 às 07:00", "Folga", "07:00 às 19:00", "Folga"],
-      ["Folga", "Folga", "19:00 às 07:00", "07:00 às 19:00"],
-      ["Folga", "Folga", "19:00 às 07:00", "07:00 às 19:00"],
-      ["07:00 às 19:00", "Folga", "Folga", "19:00 às 07:00"],
-      ["07:00 às 19:00", "Folga", "Folga", "19:00 às 07:00"]
-    ];
+  ["07:00 às 19:20", "19:00 às 07:20", "Folga", "Folga"],
+  ["07:00 às 19:20", "19:00 às 07:20", "Folga", "Folga"],
+
+  ["19:00 às 07:20", "Folga", "07:00 às 19:20", "Folga"],
+  ["19:00 às 07:20", "Folga", "07:00 às 19:20", "Folga"],
+
+  ["Folga", "Folga", "19:00 às 07:20", "07:00 às 19:20"],
+  ["Folga", "Folga", "19:00 às 07:20", "07:00 às 19:20"],
+
+  ["Folga", "07:00 às 19:20", "Folga", "19:00 às 07:20"],
+  ["Folga", "07:00 às 19:20", "Folga", "19:00 às 07:20"]
+];
 
     // =====================================
     // CONFIGURAÇÕES
