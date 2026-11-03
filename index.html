@@ -30,23 +30,6 @@
   <!-- CONTEÚDO PRINCIPAL -->
   <div>
 
-    <!-- TELA DE ALARME TOCANDO EM LOOP (MODAL) -->
-    <div id="modalAlarmeTocando" class="fixed inset-0 z-50 bg-slate-950/90 backdrop-blur-md flex flex-col items-center justify-center p-6 hidden">
-      <div class="w-24 h-24 rounded-full bg-red-500/20 flex items-center justify-center mb-6 animate-ping absolute"></div>
-      <div class="w-24 h-24 rounded-full bg-red-600 flex items-center justify-center mb-6 shadow-lg shadow-red-600/50 relative z-10">
-        <svg xmlns="http://www.w3.org/2000/svg" class="h-12 w-12 text-white animate-bounce" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9" />
-        </svg>
-      </div>
-      
-      <h2 class="text-2xl font-extrabold text-white mb-2 text-center">ALARME DE TURNO!</h2>
-      <p id="textoAlertaModal" class="text-sm text-slate-300 text-center mb-8">O seu turno está prestes a começar.</p>
-
-      <button onclick="pararAlarmeSonoro()" class="w-full max-w-xs py-4 rounded-xl bg-red-600 hover:bg-red-500 text-white font-extrabold text-base transition shadow-xl border border-red-400/40 uppercase tracking-wider">
-        PARAR ALARME
-      </button>
-    </div>
-
     <!-- TELA 1: CALENDÁRIO PRINCIPAL -->
     <div id="telaPrincipal">
 
@@ -181,21 +164,13 @@
         </div>
       </div>
 
-      <div class="grid grid-cols-2 gap-2">
+      <div>
         <button onclick="abrirTelaPDF()"
           class="w-full py-3.5 rounded-xl bg-blue-600 hover:bg-blue-500 text-white font-bold text-xs transition shadow-lg flex items-center justify-center space-x-1.5 border border-blue-400/30">
           <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
           </svg>
           <span>IMPRIMIR PDF</span>
-        </button>
-
-        <button onclick="abrirTelaAlarme()"
-          class="w-full py-3.5 rounded-xl bg-amber-600 hover:bg-amber-500 text-white font-bold text-xs transition shadow-lg flex items-center justify-center space-x-1.5 border border-amber-400/30">
-          <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9" />
-          </svg>
-          <span>CONFIG. ALARME</span>
         </button>
       </div>
 
@@ -275,100 +250,6 @@
 
     </div>
 
-    <!-- TELA 3: CONFIGURAÇÃO DE ALARMES -->
-    <div id="telaAlarme" class="hidden">
-
-      <div class="flex items-center justify-between my-4">
-        <button onclick="fecharTelaAlarme()" class="text-xs bg-slate-800 text-slate-300 font-bold px-3 py-2 rounded-lg border border-slate-700">
-          ← VOLTAR
-        </button>
-        <h2 class="text-lg font-bold text-amber-400">
-          Configuração de Alarme
-        </h2>
-        <div class="w-12"></div>
-      </div>
-
-      <div class="glass p-4 rounded-xl mt-2 space-y-3">
-
-        <div>
-          <label class="block text-xs text-slate-400 font-bold mb-1">
-            SELECIONE A EQUIPE (LETRA):
-          </label>
-          <select id="equipeAlarme"
-            class="w-full p-2.5 rounded bg-slate-800 text-white border border-slate-600 focus:outline-none focus:border-amber-500 text-sm">
-            <option value="A">Equipe A</option>
-            <option value="B">Equipe B</option>
-            <option value="C">Equipe C</option>
-            <option value="D">Equipe D</option>
-          </select>
-        </div>
-
-        <div>
-          <label class="block text-xs text-slate-400 font-bold mb-1">
-            SELECIONE A ESCALA:
-          </label>
-          <select id="escalaAlarme"
-            class="w-full p-2.5 rounded bg-slate-800 text-white border border-slate-600 focus:outline-none focus:border-amber-500 text-sm">
-            <option value="1">Escala 2x2</option>
-            <option value="2">Escala 3x3</option>
-            <option value="3">Escala 4x4</option>
-          </select>
-        </div>
-
-        <div>
-          <label class="block text-xs text-slate-400 font-bold mb-1">
-            PERÍODO DOS ALARMES:
-          </label>
-          <select id="tipoPeriodoAlarme"
-            class="w-full p-2.5 rounded bg-slate-800 text-white border border-slate-600 focus:outline-none focus:border-amber-500 text-sm">
-            <option value="fim_mes">Até o fim do mês atual</option>
-            <option value="fim_ano">Até o fim do ano atual</option>
-          </select>
-        </div>
-
-        <div>
-          <div class="flex justify-between items-center mb-1">
-            <label class="block text-xs text-slate-400 font-bold">
-              ANTECEDÊNCIA DO ALARME:
-            </label>
-            <span id="labelAntecedencia" class="text-amber-400 font-bold text-sm">30 minutos antes</span>
-          </div>
-          
-          <input type="range" id="rangeAntecedencia" min="1" max="60" value="30"
-            oninput="atualizarValorRange(this.value)"
-            class="w-full accent-amber-500 cursor-pointer bg-slate-700 h-2 rounded">
-            
-          <div class="flex justify-between text-[10px] text-slate-400 mt-1">
-            <span>1 min</span>
-            <span>30 min</span>
-            <span>60 min</span>
-          </div>
-        </div>
-
-        <button onclick="salvarAlarmes()"
-          class="w-full py-3.5 rounded-lg bg-amber-500 hover:bg-amber-600 text-white font-bold text-sm transition shadow-lg mt-2 flex items-center justify-center space-x-2">
-          <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" />
-          </svg>
-          <span>ATIVAR ALARMES</span>
-        </button>
-
-        <!-- LISTA DE ALARMES CRIADOS -->
-        <div class="mt-4 border-t border-slate-700 pt-3">
-          <div class="flex justify-between items-center mb-2">
-            <span class="text-xs text-slate-300 font-bold uppercase">Alarmes Ativos</span>
-            <button onclick="limparTodosAlarmes()" class="text-[10px] text-red-400 hover:underline font-bold">Desativar Todos</button>
-          </div>
-          
-          <div id="listaAlarmesContainer" class="space-y-2 max-h-48 overflow-y-auto pr-1">
-            <p class="text-xs text-slate-500 text-center py-2">Nenhum alarme ativado.</p>
-          </div>
-        </div>
-
-      </div>
-
-    </div>
-
   </div>
 
   <!-- RODAPÉ COM ASSINATURA DISCRETA -->
@@ -380,181 +261,14 @@
 
   <script>
 
-    let listaAlarmesCriados = [];
-    let intervaloAlarmeLoop = null;
-    let audioCtxGlobal = null;
-
-    // CARREGAR ALARMES SALVOS AO ABRIR O APP
-    function carregarAlarmesSalvos() {
-      const salvos = localStorage.getItem("meus_alarmes_turno");
-      if (salvos) {
-        try {
-          listaAlarmesCriados = JSON.parse(salvos);
-        } catch(e) {
-          listaAlarmesCriados = [];
-        }
-      }
-    }
-
-    // SALVAR ALARMES NO ARMAZENAMENTO LOCAL DO TELEMÓVEL
-    function persistirAlarmes() {
-      localStorage.setItem("meus_alarmes_turno", JSON.stringify(listaAlarmesCriados));
-    }
-
-    function iniciarAlarmeSonoroLoop(mensagem) {
-      document.getElementById("textoAlertaModal").innerText = mensagem;
-      document.getElementById("modalAlarmeTocando").classList.remove("hidden");
-
-      if (intervaloAlarmeLoop) return;
-
-      tocarCicloSirene();
-      intervaloAlarmeLoop = setInterval(() => {
-        tocarCicloSirene();
-      }, 2000);
-    }
-
-    function tocarCicloSirene() {
-      try {
-        if (!audioCtxGlobal || audioCtxGlobal.state === 'closed') {
-          audioCtxGlobal = new (window.AudioContext || window.webkitAudioContext)();
-        }
-        if (audioCtxGlobal.state === 'suspended') {
-          audioCtxGlobal.resume();
-        }
-
-        const tempoInicio = audioCtxGlobal.currentTime;
-        for (let i = 0; i < 6; i++) {
-          const osc = audioCtxGlobal.createOscillator();
-          const gain = audioCtxGlobal.createGain();
-          
-          osc.type = 'sawtooth';
-          const freq = (i % 2 === 0) ? 950 : 1300;
-          osc.frequency.setValueAtTime(freq, tempoInicio + (i * 0.3));
-          
-          gain.gain.setValueAtTime(0.6, tempoInicio + (i * 0.3));
-          gain.gain.exponentialRampToValueAtTime(0.01, tempoInicio + (i * 0.3) + 0.25);
-          
-          osc.connect(gain);
-          gain.connect(audioCtxGlobal.destination);
-          
-          osc.start(tempoInicio + (i * 0.3));
-          osc.stop(tempoInicio + (i * 0.3) + 0.25);
-        }
-      } catch (e) {
-        console.log("Erro no áudio:", e);
-      }
-    }
-
-    function pararAlarmeSonoro() {
-      if (intervaloAlarmeLoop) {
-        clearInterval(intervaloAlarmeLoop);
-        intervaloAlarmeLoop = null;
-      }
-      document.getElementById("modalAlarmeTocando").classList.add("hidden");
-    }
-
     function abrirTelaPDF() {
       document.getElementById("telaPrincipal").classList.add("hidden");
-      document.getElementById("telaAlarme").classList.add("hidden");
       document.getElementById("telaPDF").classList.remove("hidden");
     }
 
     function fecharTelaPDF() {
       document.getElementById("telaPDF").classList.add("hidden");
       document.getElementById("telaPrincipal").classList.remove("hidden");
-    }
-
-    function abrirTelaAlarme() {
-      document.getElementById("telaPrincipal").classList.add("hidden");
-      document.getElementById("telaPDF").classList.add("hidden");
-      document.getElementById("telaAlarme").classList.remove("hidden");
-      document.getElementById("equipeAlarme").value = equipeSelecionada;
-      document.getElementById("escalaAlarme").value = opcaoEscalaSelecionada;
-      renderizarListaAlarmes();
-    }
-
-    function fecharTelaAlarme() {
-      document.getElementById("telaAlarme").classList.add("hidden");
-      document.getElementById("telaPrincipal").classList.remove("hidden");
-    }
-
-    function atualizarValorRange(val) {
-      document.getElementById("labelAntecedencia").innerText = val + " minutos antes";
-    }
-
-    function salvarAlarmes() {
-      const equipeEscolhida = document.getElementById("equipeAlarme").value;
-      const escalaEscolhida = Number(document.getElementById("escalaAlarme").value);
-      const tipoPeriodo = document.getElementById("tipoPeriodoAlarme").value;
-      const antecedencia = Number(document.getElementById("rangeAntecedencia").value);
-      
-      const ano = dataAtual.getFullYear();
-      const mesInicio = dataAtual.getMonth();
-      const mesFim = tipoPeriodo === 'fim_mes' ? mesInicio : 11;
-
-      let novosAlarmes = [];
-      const nomeEscala = escalaEscolhida === 1 ? '2x2' : escalaEscolhida === 2 ? '3x3' : '4x4';
-
-      for (let m = mesInicio; m <= mesFim; m++) {
-        const totalDias = new Date(ano, m + 1, 0).getDate();
-        for (let d = 1; d <= totalDias; d++) {
-          const horario = obterDadosDia(ano, m, d, equipeEscolhida, escalaEscolhida);
-          if (horario !== "Folga") {
-            const horaInicioStr = horario.split(" ")[0]; 
-
-            novosAlarmes.push({
-              id: Date.now() + Math.random(),
-              data: `${d < 10 ? '0'+d : d}/${(m+1) < 10 ? '0'+(m+1) : (m+1)}/${ano}`,
-              turno: horaInicioStr,
-              antecedencia: antecedencia,
-              equipe: equipeEscolhida,
-              escala: nomeEscala
-            });
-          }
-        }
-      }
-
-      listaAlarmesCriados = [...novosAlarmes, ...listaAlarmesCriados];
-      persistirAlarmes();
-      renderizarListaAlarmes();
-      
-      alert(`Foram ativados ${novosAlarmes.length} alarmes para a Equipe ${equipeEscolhida} na Escala ${nomeEscala}!`);
-    }
-
-    function desativarAlarme(id) {
-      listaAlarmesCriados = listaAlarmesCriados.filter(a => a.id !== id);
-      persistirAlarmes();
-      renderizarListaAlarmes();
-    }
-
-    function limparTodosAlarmes() {
-      listaAlarmesCriados = [];
-      persistirAlarmes();
-      renderizarListaAlarmes();
-    }
-
-    function renderizarListaAlarmes() {
-      const container = document.getElementById("listaAlarmesContainer");
-      if (listaAlarmesCriados.length === 0) {
-        container.innerHTML = `<p class="text-xs text-slate-500 text-center py-2">Nenhum alarme ativado.</p>`;
-        return;
-      }
-
-      let html = "";
-      listaAlarmesCriados.forEach(alarme => {
-        html += `
-          <div class="flex items-center justify-between bg-slate-900/80 p-2 rounded border border-slate-700 text-xs">
-            <div>
-              <span class="font-bold text-amber-400">${alarme.data}</span> — Início: <span class="text-white">${alarme.turno}</span>
-              <div class="text-[10px] text-slate-400">Equipe ${alarme.equipe} (${alarme.escala}) • ${alarme.antecedencia} min antes</div>
-            </div>
-            <button onclick="desativarAlarme(${alarme.id})" class="bg-red-500/20 text-red-400 hover:bg-red-500 hover:text-white px-2 py-1 rounded text-[10px] font-bold transition">
-              Desativar
-            </button>
-          </div>
-        `;
-      });
-      container.innerHTML = html;
     }
 
     if (window.screen && window.screen.orientation &&
@@ -587,7 +301,7 @@
       ["19:00 às 07:00", "07:00 às 19:00", "Folga", "Folga"],
 
       ["Folga", "Folga", "19:00 às 07:00", "07:00 às 19:00"],
-      ["Folga", "Folga", "19:00 às 07:00", "Folga", "Folga"],
+      ["Folga", "Folga", "19:00 às 07:00", "07:00 às 19:00"],
       ["Folga", "Folga", "19:00 às 07:00", "07:00 às 19:00"]
     ];
 
@@ -874,8 +588,6 @@
       janela.document.close();
     }
 
-    // Inicialização ao carregar a página
-    carregarAlarmesSalvos();
     renderizarCalendario();
     document.getElementById("anoPDF").value = new Date().getFullYear();
 
